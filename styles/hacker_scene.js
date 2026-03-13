@@ -11,10 +11,10 @@ document.body.appendChild(renderer.domElement);
 
 const ambient=new THREE.AmbientLight(0xffffff,0.5);
 scene.add(ambient);
-const point=new THREE.PointLight(0x00ff99,2,50);
+const point=new THREE.PointLight(0x00ff99,3,50);
 point.position.set(0,5,5);
 scene.add(point);
-const neon=new THREE.PointLight(0xff00ff,1.5,30);
+const neon=new THREE.PointLight(0xff00ff,2,30);
 neon.position.set(-5,5,-5);
 scene.add(neon);
 
@@ -29,7 +29,7 @@ scene.add(stars);
 const city=new THREE.Group();
 for(let i=-10;i<=10;i++){
   const h=Math.random()*5+3;
-  const b=new THREE.Mesh(new THREE.BoxGeometry(1,h,1),new THREE.MeshStandardMaterial({color:0x081f44,emissive:0x00ff99,emissiveIntensity:0.6,metalness:0.5,roughness:0.2}));
+  const b=new THREE.Mesh(new THREE.BoxGeometry(1,h,1),new THREE.MeshStandardMaterial({color:0x081f44,emissive:0x00ff99,emissiveIntensity:1.5,metalness:0.5,roughness:0.2}));
   b.position.set(i*2,h/2,-5);
   city.add(b);
 }
@@ -42,14 +42,14 @@ hacker.add(body);
 const head=new THREE.Mesh(new THREE.SphereGeometry(0.35,16,16),new THREE.MeshStandardMaterial({color:0x020617}));
 head.position.set(0,2.05,0);
 hacker.add(head);
-const leftEye=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.05,0.05),new THREE.MeshStandardMaterial({color:0x00ff99,emissive:0x00ff99}));
+const leftEye=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.05,0.05),new THREE.MeshStandardMaterial({color:0x00ff99,emissive:0x00ff99,emissiveIntensity:1.5}));
 leftEye.position.set(-0.12,2.05,0.33);
-const rightEye=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.05,0.05),new THREE.MeshStandardMaterial({color:0x00ff99,emissive:0x00ff99}));
+const rightEye=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.05,0.05),new THREE.MeshStandardMaterial({color:0x00ff99,emissive:0x00ff99,emissiveIntensity:1.5}));
 rightEye.position.set(0.12,2.05,0.33);
 hacker.add(leftEye);
 hacker.add(rightEye);
 
-const laptopBase=new THREE.Mesh(new THREE.BoxGeometry(1,0.05,0.6),new THREE.MeshStandardMaterial({color:0x051c14,emissive:0x00ff99,emissiveIntensity:1}));
+const laptopBase=new THREE.Mesh(new THREE.BoxGeometry(1,0.05,0.6),new THREE.MeshStandardMaterial({color:0x051c14,emissive:0x00ff99,emissiveIntensity:2}));
 laptopBase.position.set(0,0.9,-0.6);
 hacker.add(laptopBase);
 const laptopScreen=new THREE.Mesh(new THREE.PlaneGeometry(1,0.5),new THREE.MeshBasicMaterial({color:0x00ff99}));
@@ -66,41 +66,40 @@ hacker.add(rightHand);
 
 scene.add(hacker);
 
-const typingText=[];
-const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-for(let i=0;i<50;i++){typingText.push(chars[Math.floor(Math.random()*chars.length)]);}
-let textIndex=0;
-const canvas=new THREE.CanvasTexture(document.createElement('canvas'));
-canvas.image.width=256;
-canvas.image.height=128;
-const ctx=canvas.image.getContext('2d');
+const canvas=document.createElement('canvas');
+canvas.width=256;
+canvas.height=128;
+const ctx=canvas.getContext('2d');
 ctx.font="30px monospace";
 ctx.fillStyle="#00ff99";
-
-laptopScreen.material.map=canvas;
+const texture=new THREE.CanvasTexture(canvas);
+laptopScreen.material.map=texture;
 laptopScreen.material.map.needsUpdate=true;
+
+const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+let textArray=Array.from({length:50},()=>chars[Math.floor(Math.random()*chars.length)]);
+let index=0;
 
 function updateScreen(){
   ctx.clearRect(0,0,256,128);
   ctx.fillStyle="#00ff99";
-  ctx.fillText(typingText.slice(textIndex,textIndex+20).join(""),10,50);
-  canvas.needsUpdate=true;
-  textIndex=(textIndex+1)%typingText.length;
+  ctx.fillText(textArray.slice(index,index+20).join(""),10,50);
+  texture.needsUpdate=true;
+  index=(index+1)%textArray.length;
 }
 
-let blinkTimer=0;
 function animate(){
   requestAnimationFrame(animate);
   stars.rotation.y+=0.0005;
-  city.rotation.y+=0.0005;
+  city.rotation.y+=0.001;
   hacker.rotation.y=Math.sin(Date.now()*0.001)*0.05;
   leftHand.rotation.x=Math.sin(Date.now()*0.01)*0.5-0.5;
   rightHand.rotation.x=Math.sin(Date.now()*0.01)*0.5-0.5;
-  leftEye.material.emissiveIntensity=0.5+Math.sin(Date.now()*0.01)*0.5;
-  rightEye.material.emissiveIntensity=0.5+Math.sin(Date.now()*0.01)*0.5;
-  updateScreen();
+  leftEye.material.emissiveIntensity=0.5+Math.sin(Date.now()*0.01);
+  rightEye.material.emissiveIntensity=0.5+Math.sin(Date.now()*0.01);
   camera.position.x=Math.sin(Date.now()*0.0005)*2;
   camera.lookAt(0,1,0);
+  updateScreen();
   renderer.render(scene,camera);
 }
 animate();
