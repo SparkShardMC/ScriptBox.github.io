@@ -14,11 +14,16 @@
     h1,h3 { text-shadow:0 0 10px #00ff99; }
 
     .button-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       z-index: 20;
+      pointer-events: none;
     }
 
     .red-button {
@@ -33,7 +38,7 @@
       box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
       transition: transform 0.2s;
       text-decoration: none;
-      display: inline-block;
+      pointer-events: auto;
     }
 
     .red-button:hover {
