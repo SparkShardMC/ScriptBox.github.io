@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="ScriptBox - Sign Up">
+  <link rel="stylesheet" href="../styles/style.css">
+  <title>ScriptBox - Sign Up</title>
+
+  <style>
+    body { margin:0; overflow:hidden; background:#000814; font-family:Arial,sans-serif; color:white; }
+    header, h1, h3 { position:relative; z-index:10; text-align:center; }
+    img { position:absolute; top:0; right:0; width:100px; height:100px; z-index:10; }
+    h1,h3 { text-shadow:0 0 10px #00ff99; }
+
+    .form-wrapper {
+      position:relative;
+      z-index:10;
+      width:420px;
+      margin:40px auto;
+      text-align:center;
+    }
+
+    .input-field {
+      width:128px;
+      height:24px;
+      padding:8px;
+      margin-top:64px;
+      border:6px solid brown;
+      border-radius:4px;
+      background:white;
+      color:black;
+      font-size:16px;
+    }
+
+    .input-field + .input-field {
+      margin-top:20px;
+    }
+
+    .oauth-btn {
+      width:260px;
+      padding:10px;
+      margin:10px auto;
+      display:block;
+      border-radius:6px;
+      font-weight:bold;
+      cursor:pointer;
+      border:none;
+    }
+
+    .google { background:#fff; color:#000; }
+    .github { background:#333; color:#fff; }
+    .microsoft { background:#2F2FEE; color:#fff; }
+
+    .dob-field {
+      margin-top:20px;
+      padding:10px;
+      width:200px;
+      border-radius:6px;
+      border:3px solid #00ff99;
+      background:white;
+      color:black;
+    }
+
+    .next-btn {
+      margin-top:40px;
+      background:red;
+      color:white;
+      padding:10px 20px;
+      border-radius:5px;
+      text-decoration:none;
+      display:inline-block;
+      font-family:sans-serif;
+      font-weight:bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <img src="../assets/logo.png">
+
+  <header>
+    <h1>ScriptBox – Sign Up</h1>
+  </header>
+
+  <h3>Create an account to keep going!</h3>
+
+  <div class="form-wrapper">
+
+    <input class="input-field" type="text" placeholder="Username" required>
+    <input class="input-field" type="email" placeholder="Email" required>
+    <input class="input-field" type="password" placeholder="Password" required>
+
+    <button class="oauth-btn google">Continue with Google</button>
+    <button class="oauth-btn github">Continue with GitHub</button>
+    <button class="oauth-btn microsoft">Continue with Microsoft</button>
+
+    <input class="dob-field" type="date" required>
+
+    <a href="verification_code.html" class="next-btn">Next</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script src="../styles/hacker_scene.js"></script>
+
+</body>
+</html>
