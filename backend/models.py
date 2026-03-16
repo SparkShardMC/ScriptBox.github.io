@@ -2,6 +2,7 @@ from datetime import datetime, date
 
 users = {}
 verification_codes = {}
+sessions = {}
 
 
 def create_user(username, email, password_hash, dob, is_minor, parent_email):
@@ -51,3 +52,17 @@ def delete_verification_record(email):
 def calculate_age(dob: date) -> int:
     today = date.today()
     return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
+
+def create_session(email: str, token: str):
+    sessions[token] = {
+        "email": email,
+        "created_at": datetime.utcnow(),
+    }
+
+
+def get_user_by_session(token: str):
+    session = sessions.get(token)
+    if not session:
+        return None
+    return get_user(session["email"])
