@@ -23,7 +23,9 @@ async function signupHandler() {
     body: JSON.stringify(body),
   });
   if (!res.ok) return;
+  const data = await res.json();
   localStorage.setItem("sb_email", email);
+  localStorage.setItem("sb_token", data.token || "");
   window.location.href = "verification_code.html";
 }
 
@@ -47,7 +49,38 @@ async function verifyCodeHandler() {
     body: JSON.stringify({ email, code: codeInput.value }),
   });
   if (!res.ok) return;
+  const data = await res.json();
+  if (data.token) localStorage.setItem("sb_token", data.token);
   window.location.href = "../dashboard.html";
+}
+
+async function loginHandler(emailSelector, passwordSelector) {
+  const email = getInputValue(emailSelector);
+  const password = getInputValue(passwordSelector);
+  if (!email || !password) return;
+  const res = await fetch(apiBase + "/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) return;
+  const data = await res.json();
+  if (data.token) {
+    localStorage.setItem("sb_email", email);
+    localStorage.setItem("sb_token", data.token);
+    window.location.href = "../dashboard.html";
+  }
+}
+
+async function loadMe() {
+  const token = localStorage.getItem("sb_token");
+  if (!token) return;
+  const res = await fetch(apiBase + "/auth/me", {
+    headers: { Authorization: "Bearer " + token },
+  });
+  if (!res.ok) return;
+  const data = await res.json();
+  console.log("Current user:", data);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
