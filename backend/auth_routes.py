@@ -1,9 +1,10 @@
 import random
+import secrets
 from datetime import datetime, timedelta, date
 from typing import Optional
 
 import bcrypt
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel, EmailStr
 
 from .config import VERIFICATION_CODE_TTL_MINUTES, MAX_VERIFICATION_ATTEMPTS
@@ -16,6 +17,8 @@ from .models import (
     increment_attempts,
     delete_verification_record,
     calculate_age,
+    create_session,
+    get_user_by_session,
 )
 from .email_service import send_verification_email
 
@@ -39,12 +42,21 @@ class SendCodeRequest(BaseModel):
     email: EmailStr
 
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
 def generate_verification_code() -> str:
     return f"{random.randint(0, 999999):06d}"
 
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
 @router.post("/signup")
@@ -95,4 +107,37 @@ def verify_code(payload: VerifyCodeRequest):
         raise HTTPException(status_code=400, detail="Incorrect verification code.")
     set_verified(payload.email)
     delete_verification_record(payload.email)
-    return {"message": "Verification successful."}
+    token = secrets.token_hex(32)
+    create_session(payload.email, token)
+    return {"message": "Verification successful.", "token": token}
+
+
+@router.post("/login")
+def login(payload: LoginRequest):
+    user = get_user(payload.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not verify_password(payload.password, user["password_hash"]):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    if not user["is_verified"]:
+        raise HTTPException(status_code=403, detail="Email not verified")
+    token = secrets.token_hex(32)
+    create_session(payload.email, token)
+    return {"message": "Login successful.", "token": token}
+
+
+@router.get("/me")
+def me(authorization: Optional[str] = Header(default=None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = authorization.split(" ", 1)[1]
+    user = get_user_by_session(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    return {
+        "username": user["username"],
+        "email": user["email"],
+        "dob": str(user["dob"]),
+        "is_minor": user["is_minor"],
+        "is_verified": user["is_verified"],
+    }
