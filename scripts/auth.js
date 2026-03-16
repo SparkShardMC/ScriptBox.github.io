@@ -1,4 +1,4 @@
-const apiBase = "https://YOUR-RENDER-URL.onrender.com"; // <-- update after deploying backend
+const apiBase = "https://scriptbox.onrender.com"; 
 
 async function googleOAuth(idToken) {
   const res = await fetch(apiBase + "/auth/oauth/google", {
