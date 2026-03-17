@@ -7,12 +7,6 @@
   <title>ScriptBox - The Home Of Internet Fun</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="scripts/auth.js" defer></script>
-  <script>
-  if (!localStorage.getItem("sb_token")) {
-    alert("Access Denied. Please sign in.");
-    window.location.href = "auth/sign-up.html";
-  }
-</script>
   <style>
     body { margin:0; overflow:hidden; background:#000814; font-family:Arial,sans-serif; color:white; }
     header, h1, h3 { position:relative; z-index:10; text-align:center; }
