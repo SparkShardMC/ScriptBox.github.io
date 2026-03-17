@@ -72,5 +72,52 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
   <script src="../styles/hacker_scene.js"></script>
 <script src="../scripts/auth.js"></script>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const apiBase = "http://localhost:5000";
+  const email = localStorage.getItem("email");
+
+  if (!email) return;
+
+  const sendBtn = document.querySelector(".send-btn");
+  const verifyBtn = document.querySelector(".confirm-btn");
+  const codeInput = document.querySelector("input[type='text']");
+
+  if (sendBtn) {
+    sendBtn.addEventListener("click", async () => {
+      await fetch(apiBase + "/auth/send-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+    });
+  }
+
+  if (verifyBtn && codeInput) {
+    verifyBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const code = codeInput.value.trim();
+      if (!code) return;
+
+      const res = await fetch(apiBase + "/auth/verify-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, code })
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        window.location.href = "../dashboard.html";
+      }
+    });
+  }
+});
 </body>
 </html>
