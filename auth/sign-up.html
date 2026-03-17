@@ -103,5 +103,21 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
   <script src="../styles/hacker_scene.js"></script>
   <script src="../scripts/auth.js" defer></script>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.querySelector(".continue-btn, #continue");
+  const input = document.querySelector("input[type='email']");
+
+  if (!btn || !input) return;
+
+  btn.addEventListener("click", () => {
+    const email = input.value.trim();
+    if (!email) return;
+
+    localStorage.setItem("email", email);
+    window.location.href = "verification_code.html";
+  });
+});
+</script>
 </body>
 </html>
